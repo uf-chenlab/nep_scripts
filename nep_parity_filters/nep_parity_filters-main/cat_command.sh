@@ -1,1 +1,0 @@
-cat test.xyz >> train.xyz
