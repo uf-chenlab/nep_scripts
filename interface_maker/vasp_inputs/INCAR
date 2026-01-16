@@ -1,0 +1,30 @@
+# --- Static / single-point ---
+ALGO  = Fast           # or Normal if SCF is finicky
+PREC  = Accurate
+ENCUT = 520
+EDIFF = 1E-6           # you can tighten to 1E-7 for cleaner energies
+
+
+NELM = 120
+
+
+IBRION = -1
+NSW    = 0
+ISIF   = 2             # irrelevant for NSW=0, but harmless
+
+ISMEAR = 0
+SIGMA  = 0.05
+
+IVDW   = 11
+LREAL  = Auto          # for accuracy you can set .FALSE. (slower, sometimes cleaner)
+NCORE  = 4
+
+LWAVE  = .FALSE.
+LCHARG = .FALSE.
+
+# --- Dipole correction (slabs) ---
+LDIPOL = .TRUE.
+IDIPOL = 3
+#DIPOL  = 0.5 0.5 0.5
+
+ISYM   = 0 # from -1 
