@@ -19,7 +19,7 @@ from collections import defaultdict
 # USER SETTINGS
 # ============================================================
 
-PERP_THRESHOLD = 2.0  # eV/Å (distance from parity diagonal)
+PERP_THRESHOLD = 2.2  # eV/Å (distance from parity diagonal)
 
 xyz_file   = "train.xyz"
 force_file = "force_train.out"
@@ -175,10 +175,12 @@ def write_xyz(fname, stats, target_atoms):
             f.write(f"{len(atom_indices)}\n")
 
             orig_comment = frames[frame][1].strip()
-            orig_comment = re.sub(r'Properties=[^\s]+', '', orig_comment)
+            orig_comment = re.sub(r'Properties=[^\s]+', '', orig_comment).strip()
 
+            # Add per-atom force vectors for OVITO hover/inspect
             props = (
                 "Properties=species:S:1:pos:R:3:"
+                "F_dft:R:3:F_nep:R:3:"
                 "d_perp:R:1:IsOutlier:I:1"
             )
 
@@ -194,11 +196,18 @@ def write_xyz(fname, stats, target_atoms):
                 elem = parts[0]
                 x, y, z = parts[1:4]
 
+                # Real + predicted forces (from your force_train.out)
+                fx_nep, fy_nep, fz_nep = f_nep[atom_idx]
+                fx_dft, fy_dft, fz_dft = f_dft[atom_idx]
+
                 dval = signed_d_atom[atom_idx]
                 is_bad = 1 if atom_idx in target_atoms else 0
 
                 f.write(
-                    f"{elem} {x} {y} {z} {dval:+.6f} {is_bad}\n"
+                    f"{elem} {x} {y} {z} "
+                    f"{fx_dft:+.6f} {fy_dft:+.6f} {fz_dft:+.6f} "
+                    f"{fx_nep:+.6f} {fy_nep:+.6f} {fz_nep:+.6f} "
+                    f"{dval:+.6f} {is_bad}\n"
                 )
 
 write_xyz(over_xyz,  over_stats,  over_atoms)
